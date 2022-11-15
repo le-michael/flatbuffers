@@ -47,6 +47,34 @@ func (rcv *Ability) MutateId(n uint32) bool {
 	return rcv._tab.MutateUint32(rcv._tab.Pos+flatbuffers.UOffsetT(0), n)
 }
 
+func AbilityKeyCompare(o1, o2 flatbuffers.UOffsetT, buf []byte) bool {
+	val1 := flatbuffers.GetUint32(buf[flatbuffers.GetFieldOffset(buf, 0, o1):])
+	val2 := flatbuffers.GetUint32(buf[flatbuffers.GetFieldOffset(buf, 0, o2):])
+	return val1 < val2
+}
+
+func AbilityLookupByKey(obj *Ability, key uint32, vectorLocation flatbuffers.UOffsetT, buf []byte) bool {
+	span := flatbuffers.GetUOffsetT(buf[vectorLocation - 4:])
+	start := flatbuffers.UOffsetT(0)
+	for span != 0 {
+		middle := span / 2
+		tableOffset := flatbuffers.GetIndirectOffset(buf, vectorLocation+ 4 * (start + middle))
+		val := flatbuffers.GetUint32(buf[flatbuffers.GetFieldOffset(buf, 0, flatbuffers.UOffsetT(len(buf)) - tableOffset):])
+		comp := int(val) - int(key)
+		if comp > 0 {
+			span = middle
+		} else if comp < 0 {
+			middle += 1
+			start += middle
+			span -= middle
+		} else {
+			obj.Init(buf, tableOffset)
+			return true
+		}
+	}
+	return false
+}
+
 func (rcv *Ability) Distance() uint32 {
 	return rcv._tab.GetUint32(rcv._tab.Pos + flatbuffers.UOffsetT(4))
 }
