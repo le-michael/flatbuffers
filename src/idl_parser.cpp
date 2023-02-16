@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <list>
 #include <string>
 #include <utility>
@@ -957,11 +958,11 @@ CheckedError Parser::ParseField(StructDef &struct_def) {
   ECHECK(AddField(struct_def, name, type, &field));
 
   if (typefield) {
-     // We preserve the relation between the typefield
-     // and field, so we can easily map it in the code
-     // generators.
-     typefield->sibling_union_field = field;
-     field->sibling_union_field = typefield;
+    // We preserve the relation between the typefield
+    // and field, so we can easily map it in the code
+    // generators.
+    typefield->sibling_union_field = field;
+    field->sibling_union_field = typefield;
   }
 
   if (token_ == '=') {
@@ -1058,7 +1059,8 @@ CheckedError Parser::ParseField(StructDef &struct_def) {
   if (field->key) {
     if (struct_def.has_key) return Error("only one field may be set as 'key'");
     struct_def.has_key = true;
-    auto is_valid = IsScalar(type.base_type) || IsString(type) || IsStruct(type);
+    auto is_valid =
+        IsScalar(type.base_type) || IsString(type) || IsStruct(type);
     if (IsArray(type)) {
       is_valid |=
           IsScalar(type.VectorType().base_type) || IsStruct(type.VectorType());
@@ -1977,8 +1979,7 @@ CheckedError Parser::TryTypedValue(const std::string *name, int dtoken,
       e.type.base_type = req;
     } else {
       return Error(std::string("type mismatch: expecting: ") +
-                   TypeName(e.type.base_type) +
-                   ", found: " + TypeName(req) +
+                   TypeName(e.type.base_type) + ", found: " + TypeName(req) +
                    ", name: " + (name ? *name : "") + ", value: " + e.constant);
     }
   }
@@ -2275,8 +2276,12 @@ template<typename T> void EnumDef::ChangeEnumValue(EnumVal *ev, T new_value) {
 }
 
 namespace EnumHelper {
-template<BaseType E> struct EnumValType { typedef int64_t type; };
-template<> struct EnumValType<BASE_TYPE_ULONG> { typedef uint64_t type; };
+template<BaseType E> struct EnumValType {
+  typedef int64_t type;
+};
+template<> struct EnumValType<BASE_TYPE_ULONG> {
+  typedef uint64_t type;
+};
 }  // namespace EnumHelper
 
 struct EnumValBuilder {
@@ -2378,6 +2383,7 @@ CheckedError Parser::ParseEnum(const bool is_union, EnumDef **dest,
   NEXT();
   std::string enum_name = attribute_;
   EXPECT(kTokenIdentifier);
+
   EnumDef *enum_def;
   ECHECK(StartEnum(enum_name, is_union, &enum_def));
   if (filename != nullptr && !opts.project_root.empty()) {
@@ -2864,6 +2870,11 @@ CheckedError Parser::ParseProtoDecl() {
     return Error("don\'t know how to parse .proto declaration starting with " +
                  TokenToStringId(token_));
   }
+	
+  for (auto struct_: structs_.vec) {
+    std::cout << struct_->name << ": " << struct_->defined_namespace << std::endl;
+  }
+
   return NoError();
 }
 
@@ -3550,6 +3561,7 @@ CheckedError Parser::DoParse(const char *source, const char **include_paths,
     // Parse pre-include proto statements if any:
     if (opts.proto_mode && (attribute_ == "option" || attribute_ == "syntax" ||
                             attribute_ == "package")) {
+
       ECHECK(ParseProtoDecl());
     } else if (IsIdent("native_include")) {
       NEXT();

@@ -1,0 +1,31 @@
+// Generated from field_enum.proto
+
+namespace pacman.Character_;
+
+enum FooEnum : int {
+  ADMIN = 0,
+  PLAYER = 1,
+  GUEST = 2,
+}
+
+namespace pacman.Character_.Nested_;
+
+enum FooEnum : int {
+  FOO = 0,
+  BAR = 1,
+  DIB = 2,
+}
+
+namespace pacman;
+
+table Character {
+  foo:pacman.Character_.FooEnum;
+  nested:pacman.Character_.Nested;
+}
+
+namespace pacman.Character_;
+
+table Nested {
+  sub_type:pacman.Character_.FooEnum;
+}
+

@@ -1,0 +1,61 @@
+// Generated from correct.proto
+
+namespace osi3.StationaryObject_.Classification_;
+
+enum Type : int {
+  TYPE_UNKNOWN = 0,
+  TYPE_OTHER = 1,
+  TYPE_BRIDGE = 2,
+  TYPE_BUILDING = 3,
+  TYPE_POLE = 4,
+  TYPE_PYLON = 5,
+  TYPE_DELINEATOR = 6,
+  TYPE_TREE = 7,
+}
+
+namespace osi3.MovingObject_;
+
+enum Type : int {
+  TYPE_UNKNOWN = 0,
+  TYPE_OTHER = 1,
+  TYPE_VEHICLE = 2,
+  TYPE_PEDESTRIAN = 3,
+  TYPE_ANIMAL = 4,
+}
+
+namespace osi3.MovingObject_.VehicleClassification_;
+
+enum Type : int {
+  TYPE_UNKNOWN = 0,
+  TYPE_OTHER = 1,
+  TYPE_SMALL_CAR = 2,
+  TYPE_COMPACT_CAR = 3,
+  TYPE_MEDIUM_CAR = 4,
+  TYPE_LUXURY_CAR = 5,
+}
+
+namespace osi3;
+
+table StationaryObject {
+  classification:osi3.StationaryObject_.Classification;
+}
+
+namespace osi3.StationaryObject_;
+
+table Classification {
+  type:osi3.StationaryObject_.Classification_.Type;
+}
+
+namespace osi3;
+
+table MovingObject {
+  type:osi3.MovingObject_.Type;
+  vehicle_classification:osi3.MovingObject_.VehicleClassification;
+}
+
+namespace osi3.MovingObject_;
+
+table VehicleClassification {
+  type:osi3.MovingObject_.VehicleClassification_.Type;
+}
+

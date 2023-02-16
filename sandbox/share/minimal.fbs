@@ -1,0 +1,35 @@
+// Generated from minimal.proto
+
+namespace bug;
+
+enum Error : int {
+  UNKNOWN = 0,
+  INTERNAL = 1,
+}
+
+namespace bug.Outer_;
+
+enum Error : int {
+  UNKNOWN = 0,
+  INTERNAL = 1,
+}
+
+namespace bug.Outer_.Inner_;
+
+enum Error : int {
+  UNKNOWN = 0,
+  INTERNAL = 1,
+}
+
+namespace bug;
+
+table Outer {
+  outer_error:bug.Error;
+}
+
+namespace bug.Outer_;
+
+table Inner {
+  inner_error:bug.Outer_.Error;
+}
+

@@ -1,0 +1,1 @@
+Correct when we define the enum first followed by the field.

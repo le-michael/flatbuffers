@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package bug;
+
+enum Error {
+	UNKNOWN = 0;
+	INTERNAL = 1;
+}
+
+message Outer {
+	optional Error outer_error = 1;
+	enum Error {
+		UNKNOWN = 0;
+		INTERNAL = 1;
+	}
+
+	message Inner {
+		optional Error inner_error = 1;
+		enum Error {
+			UNKNOWN = 0;
+			INTERNAL = 1;
+		}
+	}
+}

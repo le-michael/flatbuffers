@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+option optimize_for = SPEED;
+
+package pacman;
+
+message Character {
+	optional FooEnum foo = 1;
+	enum FooEnum {
+		ADMIN = 0;
+		PLAYER = 1;
+		GUEST = 2;
+	}
+
+
+	optional Nested nested = 2;
+
+	message Nested {
+		optional FooEnumf sub_type= 1;
+		enum FooEnum {
+			FOO = 0;
+			BAR = 1;
+			DIB = 2;
+		}
+	}
+
+}
