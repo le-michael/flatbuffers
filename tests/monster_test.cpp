@@ -324,6 +324,10 @@ void AccessFlatBufferTest(const uint8_t* flatbuf, size_t length, bool pooled) {
   TEST_EQ(vecoftables->LookupByKey("Wilma"),
           vecoftables->LookupByKey(std::string("Wilma")));
 
+  char char_key[] = "Barney";
+  TEST_EQ(vecoftables->LookupByKey("Barney"),
+          vecoftables->LookupByKey(char_key));
+
 #ifdef FLATBUFFERS_HAS_STRING_VIEW
   // Tests for LookupByKey with a key that is a truncated
   // version of a longer, invalid key.
@@ -351,14 +355,16 @@ void AccessFlatBufferTest(const uint8_t* flatbuf, size_t length, bool pooled) {
     std::string key5("A\xC2\xA2", 3); // Cent sign (2 bytes)
     std::string key6("A\xE2\x82\xAC", 4); // Euro sign (3 bytes)
     std::string key7("A\xF0\x90\x8D\x88", 5); // Old Italic letter (4 bytes)
+    std::string key8("", 0); // Empty string
 
-    auto m1_name = fbb.CreateString(flatbuffers::string_view(key1.data(), key1.size()));
-    auto m2_name = fbb.CreateString(flatbuffers::string_view(key2.data(), key2.size()));
-    auto m3_name = fbb.CreateString(flatbuffers::string_view(key3.data(), key3.size()));
-    auto m4_name = fbb.CreateString(flatbuffers::string_view(key4.data(), key4.size()));
-    auto m5_name = fbb.CreateString(flatbuffers::string_view(key5.data(), key5.size()));
-    auto m6_name = fbb.CreateString(flatbuffers::string_view(key6.data(), key6.size()));
-    auto m7_name = fbb.CreateString(flatbuffers::string_view(key7.data(), key7.size()));
+    auto m1_name = fbb.CreateString(key1);
+    auto m2_name = fbb.CreateString(key2);
+    auto m3_name = fbb.CreateString(key3);
+    auto m4_name = fbb.CreateString(key4);
+    auto m5_name = fbb.CreateString(key5);
+    auto m6_name = fbb.CreateString(key6);
+    auto m7_name = fbb.CreateString(key7);
+    auto m8_name = fbb.CreateString(key8);
 
     MonsterBuilder mb1(fbb);
     mb1.add_name(m1_name);
@@ -395,6 +401,11 @@ void AccessFlatBufferTest(const uint8_t* flatbuf, size_t length, bool pooled) {
     mb7.add_hp(77);
     auto m7 = mb7.Finish();
 
+    MonsterBuilder mb8(fbb);
+    mb8.add_name(m8_name);
+    mb8.add_hp(88);
+    auto m8 = mb8.Finish();
+
     std::vector<flatbuffers::Offset<Monster>> mlocs_null;
     mlocs_null.push_back(m1);
     mlocs_null.push_back(m2);
@@ -403,6 +414,7 @@ void AccessFlatBufferTest(const uint8_t* flatbuf, size_t length, bool pooled) {
     mlocs_null.push_back(m5);
     mlocs_null.push_back(m6);
     mlocs_null.push_back(m7);
+    mlocs_null.push_back(m8);
 
     auto vec_null_offset = fbb.CreateVectorOfSortedTables(&mlocs_null);
 
@@ -415,20 +427,22 @@ void AccessFlatBufferTest(const uint8_t* flatbuf, size_t length, bool pooled) {
 
     auto monster = flatbuffers::GetRoot<Monster>(fbb.GetBufferPointer());
     auto vec_null = monster->testarrayoftables();
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key1.data(), key1.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key1.data(), key1.size()))->hp(), 11);
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key2.data(), key2.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key2.data(), key2.size()))->hp(), 22);
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key3.data(), key3.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key3.data(), key3.size()))->hp(), 33);
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key4.data(), key4.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key4.data(), key4.size()))->hp(), 44);
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key5.data(), key5.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key5.data(), key5.size()))->hp(), 55);
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key6.data(), key6.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key6.data(), key6.size()))->hp(), 66);
-    TEST_NOTNULL(vec_null->LookupByKey(flatbuffers::string_view(key7.data(), key7.size())));
-    TEST_EQ(vec_null->LookupByKey(flatbuffers::string_view(key7.data(), key7.size()))->hp(), 77);
+    TEST_NOTNULL(vec_null->LookupByKey(key1));
+    TEST_EQ(vec_null->LookupByKey(key1)->hp(), 11);
+    TEST_NOTNULL(vec_null->LookupByKey(key2));
+    TEST_EQ(vec_null->LookupByKey(key2)->hp(), 22);
+    TEST_NOTNULL(vec_null->LookupByKey(key3));
+    TEST_EQ(vec_null->LookupByKey(key3)->hp(), 33);
+    TEST_NOTNULL(vec_null->LookupByKey(key4));
+    TEST_EQ(vec_null->LookupByKey(key4)->hp(), 44);
+    TEST_NOTNULL(vec_null->LookupByKey(key5));
+    TEST_EQ(vec_null->LookupByKey(key5)->hp(), 55);
+    TEST_NOTNULL(vec_null->LookupByKey(key6));
+    TEST_EQ(vec_null->LookupByKey(key6)->hp(), 66);
+    TEST_NOTNULL(vec_null->LookupByKey(key7));
+    TEST_EQ(vec_null->LookupByKey(key7)->hp(), 77);
+    TEST_NOTNULL(vec_null->LookupByKey(key8));
+    TEST_EQ(vec_null->LookupByKey(key8)->hp(), 88);
 
     // Also test that searching for "A" returns null, since it's a different length
     TEST_NULL(vec_null->LookupByKey(flatbuffers::string_view("A", 1)));

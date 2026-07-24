@@ -2608,6 +2608,9 @@ class CppGenerator : public BaseGenerator {
       code_ += "  int KeyCompareWithValue(const char *_{{FIELD_NAME}}) const {";
       code_ += "    return ::flatbuffers::StringCompare({{FIELD_NAME}}()->c_str(), {{FIELD_NAME}}()->size(), _{{FIELD_NAME}}, strlen(_{{FIELD_NAME}}));";
       code_ += "  }";
+      code_ += "  int KeyCompareWithValue(char *_{{FIELD_NAME}}) const {";
+      code_ += "    return KeyCompareWithValue(static_cast<const char *>(_{{FIELD_NAME}}));";
+      code_ += "  }";
       // Compares key against any string-like object (e.g. std::string_view or
       // std::string) that has .data() and .size() methods.
       code_ += "  template<typename StringType>";
